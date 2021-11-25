@@ -71,6 +71,7 @@ func query(w http.ResponseWriter, r *http.Request) { // createsquery results sit
 	getData(w, r)
 	go routine()
 	rquery := r.FormValue("band")
+	rquery = strings.Title(rquery)
 	query := strings.Split(rquery, " - ")
 	intquery, _ := strconv.Atoi((query[0]))
 	var oneartistData []allBands
@@ -105,7 +106,7 @@ func query(w http.ResponseWriter, r *http.Request) { // createsquery results sit
 		case "Locations":
 			for i := range artistData {
 				for j := range artistData[i].DatesLocations {
-					if j == query[0] {
+					if j == strings.ToLower(query[0]) {
 						oneartistData = append(oneartistData, artistData[i])
 					}
 				}
@@ -130,7 +131,7 @@ func query(w http.ResponseWriter, r *http.Request) { // createsquery results sit
 				}
 			}
 			for j := range artistData[k].DatesLocations {
-				if j == query[0] {
+				if j == strings.ToLower(query[0]) {
 					oneartistData = append(oneartistData, artistData[k])
 				}
 			}

@@ -34,7 +34,14 @@
         {{end}}
           </label> 
     </datalist>
+
   <input type="submit">
+      <script>
+      document.querySelector("#default")
+      .oninput = function() {
+        this.pattern = `[\\w\\s+#]{${this.value.length}}`;
+      }
+    </script>
 </header>
 <body>
     <iframe name="iframe_a" p id="p2" height="530px" width="100%" title="Iframe"></iframe>
