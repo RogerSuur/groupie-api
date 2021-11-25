@@ -13,34 +13,61 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", handler) // handler for main page on site
-	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("./assets"))))
-	http.HandleFunc("/query", query)   // handler for query results
-	http.HandleFunc("/search", search) //handler for search bar
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("./assets")))) //	http.HandleFunc("/concerts", concerts) // handler for result site
+	http.HandleFunc("/", handler)                                                          // handler for main page on site
+	http.HandleFunc("/query", query)                                                       // handler for query results
+	http.HandleFunc("/search", search)                                                     //handler for search bar
 	fmt.Println("Starting server at localhost:8000")
 	http.ListenAndServe(":8000", nil) // start web server on port 8000
 
 }
 
 func handler(w http.ResponseWriter, r *http.Request) { // creates main site using templates
-	templ, _ := template.ParseFiles("assets/index.html") // function to show html template on page
-
+	templ, err := template.ParseFiles("assets/index.html") // function to show html template on page
+	if err != nil {
+		http.Error(w, "500 Internal Server ERROR", http.StatusInternalServerError)
+		return
+	}
+	if r.URL.Path != "/" {
+		http.Error(w, "404 address NOT FOUND", http.StatusNotFound)
+		return
+	}
 	getData(w, r)
 	go routine()
-	templ.ExecuteTemplate(w, "index.html", artistData)
+	err = templ.ExecuteTemplate(w, "index.html", artistData)
+	if err != nil {
+		http.Error(w, "500 Internal server error", http.StatusInternalServerError)
+		return
+	}
 }
 func search(w http.ResponseWriter, r *http.Request) { // creates search bar site using templates
+	templ, err := template.ParseFiles("assets/search.html") // function to show html template on page
+	if err != nil {
+		http.Error(w, "500 Internal Server ERROR", http.StatusInternalServerError)
+		return
+	}
 	if r.URL.Path != "/search" {
 		http.Error(w, "Error 404\nPage not found!", 404)
 		return
 	}
-	templ, _ := template.ParseFiles("assets/search.html") // function to show html template on page
 	getData(w, r)
 	go routine()
-	templ.ExecuteTemplate(w, "search.html", artistData)
+	err = templ.ExecuteTemplate(w, "search.html", artistData)
+	if err != nil {
+		http.Error(w, "500 Internal server error", http.StatusInternalServerError)
+		return
+	}
 }
 func query(w http.ResponseWriter, r *http.Request) { // createsquery results site using templates
-	templ, _ := template.ParseFiles("assets/query.html") // function to show html template on page
+	templ, err := template.ParseFiles("assets/query.html") // function to show html template on page
+	if err != nil {
+		http.Error(w, "500 Internal Server ERROR", http.StatusInternalServerError)
+		return
+	}
+	if r.URL.Path != "/query" {
+		http.Error(w, "Error 404\nPage not found!", 404)
+		return
+	}
 	getData(w, r)
 	go routine()
 	rquery := r.FormValue("band")
@@ -49,7 +76,7 @@ func query(w http.ResponseWriter, r *http.Request) { // createsquery results sit
 	var oneartistData []allBands
 	if len(query) > 1 { //checks is there search combination "word - word"
 		switch query[1] {
-		case "Artist/Band":
+		case "Band":
 			for i := range artistData {
 				if artistData[i].Name == query[0] {
 					oneartistData = append(oneartistData, artistData[i])
@@ -111,7 +138,11 @@ func query(w http.ResponseWriter, r *http.Request) { // createsquery results sit
 		}
 
 	}
-	templ.ExecuteTemplate(w, "query.html", oneartistData) // shows only data according to search results
+	err = templ.ExecuteTemplate(w, "query.html", oneartistData) // shows only data according to search results
+	if err != nil {
+		http.Error(w, "500 Internal server error", http.StatusInternalServerError)
+		return
+	}
 }
 
 func routine() {
@@ -125,10 +156,10 @@ func getData(w http.ResponseWriter, r *http.Request) {
 		fmt.Print(err.Error())
 		os.Exit(1)
 	}
-	bandData, _ := ioutil.ReadAll(res.Body)
+	bandData, err := ioutil.ReadAll(res.Body)
 	if err = json.Unmarshal(bandData, &artistData); err != nil {
 		log.Printf("Body parse error, %v", err)
-		w.WriteHeader(400) // Return 400 Bad Request.
+		w.WriteHeader(500) // Return 500 Bad Request.
 		return
 	}
 	response, err := http.Get("https://groupietrackers.herokuapp.com/api/relation") //takes relations data from API
@@ -136,8 +167,12 @@ func getData(w http.ResponseWriter, r *http.Request) {
 		fmt.Print(err.Error())
 		os.Exit(1)
 	}
-	responseData, _ := ioutil.ReadAll(response.Body)
-
+	responseData, err := ioutil.ReadAll(response.Body)
+	if err = json.Unmarshal(bandData, &artistData); err != nil {
+		log.Printf("Body parse error, %v", err)
+		w.WriteHeader(500) // Return 500 Bad Request.
+		return
+	}
 	var concertData relationIndex
 	json.Unmarshal(responseData, &concertData)
 	relationData = concertData.Index
