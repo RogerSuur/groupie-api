@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Groupie tracker</title>
+    <link rel="stylesheet" href="css/styletest.css">
+</head>
+
+<header>
+  <div class="topnav">
+    <a href="/">Artists</a>
+    <a href="/search">Search</a>
+   </div>
+  <details class="p2">
+    <summary>Credits</summary>
+    <ul>JollyRoger Alo</ul>
+   </details>
+  </header>
+<body>
+    {{range . }}
+   
+      <div id="imageColumn"  class="card">
+    <br> 
+      <div class="p3"
+       >{{.Name}} </div>
+    <br>
+   <img src="{{.Image}}">
+    <br> 
+    <br> 
+      <details class="p1">
+        <summary>Members</summary>
+          <ul>  {{range .Members}}
+            {{ . }};
+          {{end}}
+          </ul>
+      </details>  
+    <br> 
+      <details class="p1">
+        <summary>Concerts</summary>
+          <ul>  {{range $key, $value := .DatesLocations}}
+            <p class="a"> {{$key}}:    </p>
+              {{ range $value}}
+            <p>{{.}}</p>
+            {{end}}
+          {{end}}
+          </ul>
+      </details>          
+    <br> 
+    
+      <div class="p1"> Creation Date: {{.CreationDate}} </div> 
+    <br>      
+      <div class="p1"> First Album: {{.FirstAlbum}}</div>
+      </div>   
+     {{end}}
+</body>
+</html>

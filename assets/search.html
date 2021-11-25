@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Groupie tracker</title>
+      <link rel="stylesheet" href="css/styletest.css">
+ </head>
+ <header>
+  <div class="topnav">
+    <a href="/">Artists</a>
+    <a href="/search">Search</a>
+   </div>
+  <details class="p2">
+    <summary>Credits</summary>
+    <ul>JollyRoger Alo</ul>
+   </details>
+   <form action="/query" method="post" target="iframe_a">
+      <label for="bands">Search for a band:
+      <input type= "test" list="bands" name="band" id="band">
+       <datalist id="bands">
+        {{range . }}
+      <option value="{{.Name}} - Band">
+        {{end}}   
+        {{range . }}
+      <option value="{{.CreationDate}} - Creation date">
+    
+             {{range $key, $value := .DatesLocations}}
+      <option value="{{$key}} - Locations"> 
+            {{end}}   
+      <option value="{{.FirstAlbum}} - First album">
+          {{range .Members }}
+      <option value="{{.}} - Members">
+        {{end}}
+        {{end}}
+          </label> 
+    </datalist>
+  <input type="submit">
+</header>
+<body>
+    <iframe name="iframe_a" p id="p2" height="530px" width="100%" title="Iframe"></iframe>
+</body>
+</html>

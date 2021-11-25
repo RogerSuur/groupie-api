@@ -1,0 +1,73 @@
+.p1 {
+    font-family:"Lucida Handwriting", Fantasy, serif;
+  }
+.p2 {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    text-align: left;
+  }
+ 
+  .p3 {
+    font-family:"Lucida Handwriting", Fantasy, serif;
+    text-shadow: black;
+      text-transform: uppercase;
+      color: rgb(3, 49, 13);
+    }
+
+  #imageColumn {
+   float: left;
+  width: 25%;
+  padding: 10px;
+    
+     
+   }
+  .card {
+    /* Add shadows to create the "card" effect */
+    box-shadow: 8px 8px 8px 16px rgba(0.9,0.4,0.4,0.9);
+    transition: 0.2s;
+    background-color: rgb(240, 247, 247);
+    text-align: center;
+    border: 15px solid rgb(44, 49, 121);
+    box-sizing: border-box;
+    overflow: auto;
+   height: 530px;
+    margin-bottom: 20px;
+  }
+
+    .card:hover {
+      box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  }
+ 
+    img {
+      border-radius: 50%;
+    }
+    p.a {
+      text-transform: capitalize;
+    }
+
+
+    .topnav {
+      overflow: hidden;
+      background-color: #333;
+    }
+    
+    .topnav a {
+      float: left;
+      color: #f2f2f2;
+      text-align:center;
+      padding: 5px 9px;
+      text-decoration: none;
+      font-size: 35px;
+    }
+         
+    .topnav a.active {
+      background-color: #04AA6D;
+      color: rgb(173, 26, 26);
+    }
+    header {
+      background-color: #666;
+      padding: 10px;
+      text-align:center;
+      font-size:35px;
+      color: white;
+    }
