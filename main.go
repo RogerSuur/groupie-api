@@ -71,7 +71,7 @@ func query(w http.ResponseWriter, r *http.Request) { // createsquery results sit
 	}
 	getData(w, r)
 
-	rquery := r.FormValue("band")
+	rquery := r.FormValue("bands")
 	rquery = strings.Title(rquery)
 	query := strings.Split(rquery, " - ")
 	intquery, _ := strconv.Atoi((query[0]))

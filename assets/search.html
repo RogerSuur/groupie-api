@@ -14,28 +14,25 @@
     <summary>Credits</summary>
     <ul>JollyRoger Alo</ul>
    </details>
-   <form action="/query" method="post" target="iframe_a">
+   <form method="post" action="/query" target="iframe_a">
     <button type="submit">Search</button>
     <input list="artists" id="bands" name="bands" type="text"/>
     <datalist id="artists">{{range .ArtistData }}
-        <option value= "{{.Name}}">
+        <option value= "{{.Name}} - Band">
             {{range .Members}}
-        <option value= "{{.}}">
+        <option value= "{{.}} - Members">
             {{end}}
-        <option value= "{{.FirstAlbum}}">
-        <option value= "{{.CreationDate}}">
+        <option value= "{{.FirstAlbum }} - First album">
+        <option value= "{{.CreationDate }} - Creation date">
             {{end}}
-            
-            
             {{range $key, $value := .Map}}
-        <option value= "{{$key}}">
+        <option value= "{{$key}} - Locations">
             {{end}}
-            
         </datalist>
         </form>
-    </datalist>
-
 </header>
+
+
 <body>
     <iframe name="iframe_a" p id="p2" height="530px" width="100%" title="Iframe"></iframe>
 </body>
