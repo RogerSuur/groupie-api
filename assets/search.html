@@ -15,33 +15,26 @@
     <ul>JollyRoger Alo</ul>
    </details>
    <form action="/query" method="post" target="iframe_a">
-      <label for="bands">Search for a band:
-      <input type= "test" list="bands" name="band" id="band">
-       <datalist id="bands">
-        {{range . }}
-      <option value="{{.Name}} - Band">
-        {{end}}   
-        {{range . }}
-      <option value="{{.CreationDate}} - Creation date">
-    
-             {{range $key, $value := .DatesLocations}}
-      <option value="{{$key}} - Locations"> 
-            {{end}}   
-      <option value="{{.FirstAlbum}} - First album">
-          {{range .Members }}
-      <option value="{{.}} - Members">
-        {{end}}
-        {{end}}
-          </label> 
+    <button type="submit">Search</button>
+    <input list="artists" id="bands" name="bands" type="text"/>
+    <datalist id="artists">{{range .ArtistData }}
+        <option value= "{{.Name}}">
+            {{range .Members}}
+        <option value= "{{.}}">
+            {{end}}
+        <option value= "{{.FirstAlbum}}">
+        <option value= "{{.CreationDate}}">
+            {{end}}
+            
+            
+            {{range $key, $value := .Map}}
+        <option value= "{{$key}}">
+            {{end}}
+            
+        </datalist>
+        </form>
     </datalist>
 
-  <input type="submit">
-      <script>
-      document.querySelector("#default")
-      .oninput = function() {
-        this.pattern = `[\\w\\s+#]{${this.value.length}}`;
-      }
-    </script>
 </header>
 <body>
     <iframe name="iframe_a" p id="p2" height="530px" width="100%" title="Iframe"></iframe>

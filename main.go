@@ -16,10 +16,9 @@ func main() {
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("./assets")))) //	http.HandleFunc("/concerts", concerts) // handler for result site
 	http.HandleFunc("/", handler)                                                          // handler for main page on site
 	http.HandleFunc("/query", query)                                                       // handler for query results
-	http.HandleFunc("/search", search)                                                     //handler for search bar
+	http.HandleFunc("/search", search)                                                     // handler for search bar
 	fmt.Println("Starting server at localhost:8000")
 	http.ListenAndServe(":8000", nil) // start web server on port 8000
-
 }
 
 func handler(w http.ResponseWriter, r *http.Request) { // creates main site using templates
@@ -33,13 +32,14 @@ func handler(w http.ResponseWriter, r *http.Request) { // creates main site usin
 		return
 	}
 	getData(w, r)
-	go routine()
-	err = templ.ExecuteTemplate(w, "index.html", artistData)
+
+	err = templ.ExecuteTemplate(w, "index.html", finaldata)
 	if err != nil {
 		http.Error(w, "500 Internal server error", http.StatusInternalServerError)
 		return
 	}
 }
+
 func search(w http.ResponseWriter, r *http.Request) { // creates search bar site using templates
 	templ, err := template.ParseFiles("assets/search.html") // function to show html template on page
 	if err != nil {
@@ -51,13 +51,14 @@ func search(w http.ResponseWriter, r *http.Request) { // creates search bar site
 		return
 	}
 	getData(w, r)
-	go routine()
-	err = templ.ExecuteTemplate(w, "search.html", artistData)
+
+	err = templ.ExecuteTemplate(w, "search.html", finaldata)
 	if err != nil {
 		http.Error(w, "500 Internal server error", http.StatusInternalServerError)
 		return
 	}
 }
+
 func query(w http.ResponseWriter, r *http.Request) { // createsquery results site using templates
 	templ, err := template.ParseFiles("assets/query.html") // function to show html template on page
 	if err != nil {
@@ -69,13 +70,13 @@ func query(w http.ResponseWriter, r *http.Request) { // createsquery results sit
 		return
 	}
 	getData(w, r)
-	go routine()
+
 	rquery := r.FormValue("band")
 	rquery = strings.Title(rquery)
 	query := strings.Split(rquery, " - ")
 	intquery, _ := strconv.Atoi((query[0]))
 	var oneartistData []allBands
-	if len(query) > 1 { //checks is there search combination "word - word"
+	if len(query) > 1 { // checks is there search combination "word - word"
 		switch query[1] {
 		case "Band":
 			for i := range artistData {
@@ -137,7 +138,6 @@ func query(w http.ResponseWriter, r *http.Request) { // createsquery results sit
 			}
 
 		}
-
 	}
 	err = templ.ExecuteTemplate(w, "query.html", oneartistData) // shows only data according to search results
 	if err != nil {
@@ -146,13 +146,8 @@ func query(w http.ResponseWriter, r *http.Request) { // createsquery results sit
 	}
 }
 
-func routine() {
-	for i, element := range relationData {
-		artistData[i].DatesLocations = element.DatesLocations //replaces empty DatesLocations map with relations API data
-	}
-}
 func getData(w http.ResponseWriter, r *http.Request) {
-	res, err := http.Get("https://groupietrackers.herokuapp.com/api/artists") //takes artists data from API
+	res, err := http.Get("https://groupietrackers.herokuapp.com/api/artists") // takes artists data from API
 	if err != nil {
 		fmt.Print(err.Error())
 		os.Exit(1)
@@ -163,7 +158,7 @@ func getData(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(500) // Return 500 Bad Request.
 		return
 	}
-	response, err := http.Get("https://groupietrackers.herokuapp.com/api/relation") //takes relations data from API
+	response, err := http.Get("https://groupietrackers.herokuapp.com/api/relation") // takes relations data from API
 	if err != nil {
 		fmt.Print(err.Error())
 		os.Exit(1)
@@ -175,8 +170,26 @@ func getData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var concertData relationIndex
+
 	json.Unmarshal(responseData, &concertData)
 	relationData = concertData.Index
+
+	for i, element := range relationData {
+		artistData[i].DatesLocations = element.DatesLocations // replaces empty DatesLocations map with relations API data
+	}
+	tempmap := make(map[string][]int)
+	tempbool := make(map[string]bool)
+
+	for k := range concertData.Index {
+		for i := range concertData.Index[k].DatesLocations {
+			if tempbool[i] == false {
+				tempmap[i] = append(tempmap[i], k)
+				tempbool[i] = true
+			}
+		}
+	}
+	finaldata.Map = tempmap
+	finaldata.ArtistData = artistData
 }
 
 type allBands struct {
@@ -191,6 +204,7 @@ type allBands struct {
 	Relations      string
 	DatesLocations map[string][]string
 }
+
 type relationIndex struct {
 	Index []struct {
 		Id             int
@@ -198,9 +212,20 @@ type relationIndex struct {
 	}
 }
 
-var artistData []allBands
-var oneartistData []allBands
-var relationData []struct {
-	Id             int
-	DatesLocations map[string][]string
+var (
+	artistData    []allBands
+	oneartistData []allBands
+	relationData  []struct {
+		Id             int
+		DatesLocations map[string][]string
+	}
+)
+
+var UptDatesLocations map[string][]int
+
+type manybands struct {
+	Map        map[string][]int
+	ArtistData []allBands
 }
+
+var finaldata manybands
