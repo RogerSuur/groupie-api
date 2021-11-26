@@ -71,7 +71,7 @@ func query(w http.ResponseWriter, r *http.Request) { // createsquery results sit
 	}
 	getData(w, r)
 
-	rquery := r.FormValue("bands")
+	rquery := r.FormValue("mybands")
 	rquery = strings.Title(rquery)
 	query := strings.Split(rquery, " - ")
 	intquery, _ := strconv.Atoi((query[0]))
@@ -183,7 +183,11 @@ func getData(w http.ResponseWriter, r *http.Request) {
 	for k := range concertData.Index {
 		for i := range concertData.Index[k].DatesLocations {
 			if tempbool[i] == false {
-				tempmap[i] = append(tempmap[i], k)
+				// e2 := strings.Split(i, e)
+				// strings.SplitAfter()
+				e := strings.Title(i)
+				tempmap[e] = append(tempmap[e], k)
+				fmt.Println(e)
 				tempbool[i] = true
 			}
 		}
