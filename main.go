@@ -187,7 +187,7 @@ func getData(w http.ResponseWriter, r *http.Request) {
 				// strings.SplitAfter()
 				e := strings.Title(i)
 				tempmap[e] = append(tempmap[e], k)
-				fmt.Println(e)
+			
 				tempbool[i] = true
 			}
 		}
