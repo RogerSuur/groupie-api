@@ -8,4 +8,4 @@ http://localhost:8000
 No testfile provided, only standard packages are used, only html and css used.
 
 Credits to:
-JollyRoger, Alo, Markus
+JollyRoger, Alo
