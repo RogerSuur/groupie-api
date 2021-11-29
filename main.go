@@ -33,7 +33,7 @@ func handler(w http.ResponseWriter, r *http.Request) { // creates main site usin
 	}
 	getData(w, r)
 
-	err = templ.ExecuteTemplate(w, "index.html", finaldata)
+	err = templ.ExecuteTemplate(w, "index.html", artistData)
 	if err != nil {
 		http.Error(w, "500 Internal server error", http.StatusInternalServerError)
 		return
@@ -52,7 +52,7 @@ func search(w http.ResponseWriter, r *http.Request) { // creates search bar site
 	}
 	getData(w, r)
 
-	err = templ.ExecuteTemplate(w, "search.html", finaldata)
+	err = templ.ExecuteTemplate(w, "search.html", artistData)
 	if err != nil {
 		http.Error(w, "500 Internal server error", http.StatusInternalServerError)
 		return
@@ -71,8 +71,7 @@ func query(w http.ResponseWriter, r *http.Request) { // createsquery results sit
 	}
 	getData(w, r)
 
-	rquery := r.FormValue("mybands")
-	rquery = strings.Title(rquery)
+	rquery := r.FormValue("band")
 	query := strings.Split(rquery, " - ")
 	intquery, _ := strconv.Atoi((query[0]))
 	var oneartistData []allBands
@@ -80,7 +79,7 @@ func query(w http.ResponseWriter, r *http.Request) { // createsquery results sit
 		switch query[1] {
 		case "Band":
 			for i := range artistData {
-				if artistData[i].Name == query[0] {
+				if artistData[i].Name == strings.Title(query[0]) {
 					oneartistData = append(oneartistData, artistData[i])
 				}
 			}
@@ -116,7 +115,7 @@ func query(w http.ResponseWriter, r *http.Request) { // createsquery results sit
 	} else { // all other cases when there is just regular word on search bar
 		for k := range artistData {
 
-			if artistData[k].Name == query[0] {
+			if artistData[k].Name == strings.Title(query[0]) {
 				oneartistData = append(oneartistData, artistData[k])
 			}
 			if artistData[k].FirstAlbum == query[0] {
@@ -164,36 +163,14 @@ func getData(w http.ResponseWriter, r *http.Request) {
 		os.Exit(1)
 	}
 	responseData, err := ioutil.ReadAll(response.Body)
-	if err = json.Unmarshal(bandData, &artistData); err != nil {
-		log.Printf("Body parse error, %v", err)
-		w.WriteHeader(500) // Return 500 Bad Request.
-		return
-	}
 	var concertData relationIndex
-
 	json.Unmarshal(responseData, &concertData)
 	relationData = concertData.Index
 
 	for i, element := range relationData {
 		artistData[i].DatesLocations = element.DatesLocations // replaces empty DatesLocations map with relations API data
 	}
-	tempmap := make(map[string][]int)
-	tempbool := make(map[string]bool)
 
-	for k := range concertData.Index {
-		for i := range concertData.Index[k].DatesLocations {
-			if tempbool[i] == false {
-				// e2 := strings.Split(i, e)
-				// strings.SplitAfter()
-				e := strings.Title(i)
-				tempmap[e] = append(tempmap[e], k)
-			
-				tempbool[i] = true
-			}
-		}
-	}
-	finaldata.Map = tempmap
-	finaldata.ArtistData = artistData
 }
 
 type allBands struct {
@@ -224,12 +201,3 @@ var (
 		DatesLocations map[string][]string
 	}
 )
-
-var UptDatesLocations map[string][]int
-
-type manybands struct {
-	Map        map[string][]int
-	ArtistData []allBands
-}
-
-var finaldata manybands
